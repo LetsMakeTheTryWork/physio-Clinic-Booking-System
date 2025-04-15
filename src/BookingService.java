@@ -21,12 +21,11 @@ public class BookingService {
     }
 
     public boolean removePatient(Patient patient) {
-
-        for (Physiotherapist physio : physiotherapists) {
+          for (Physiotherapist physio : physiotherapists) {
             for (Treatment treatment : physio.getTreatments()) {
                 if (treatment.getPatient() != null && treatment.getPatient().equals(patient)) {
                     treatment.setStatus(TreatmentStatus.CANCELLED);
-                    treatment.setPatient(null);
+                    treatment.setPatient(null); // Clear the patient
                 }
             }
         }

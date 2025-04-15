@@ -35,12 +35,12 @@ public class Main {
 
         allPhysios.addAll(List.of(Sandy, Mark, Sarah, Ivy, Gray));
 
-
+        // Create dummy patients
         for (int i = 1; i <= 10; i++) {
             allPatients.add(new Patient("PT" + i, "Patient " + i, "Address " + i, "0700" + i + "000" + i));
         }
 
-
+        // Assign default treatments
         LocalDate startDate = LocalDate.now();
         for (Physiotherapist physio : allPhysios) {
             for (int i = 0; i < 28; i++) {
@@ -53,7 +53,7 @@ public class Main {
         BookingService bookingSystem = new BookingService();
         allPhysios.forEach(bookingSystem::addPhysiotherapist);
 
-
+        // Console menu
         while (true) {
             System.out.println("\n====== Physio Clinic App ======");
             System.out.println("1. Book Appointment");
@@ -67,7 +67,7 @@ public class Main {
             System.out.print("Choose an option: ");
 
             int choice = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine();  // Consume newline
 
             switch (choice) {
                 case 1 -> bookAppointment(bookingSystem);
@@ -101,7 +101,7 @@ public class Main {
             System.out.println((i + 1) + ". " + allPhysios.get(i).getFullName());
         }
         int physioChoice = scanner.nextInt() - 1;
-        scanner.nextLine();
+        scanner.nextLine();  // Consume newline
         Physiotherapist selectedPhysio = allPhysios.get(physioChoice);
 
         System.out.println("Enter Treatment Name:");
