@@ -4,14 +4,14 @@ public class Treatment {
     private String name;
     private LocalDateTime dateTime;
     private Physiotherapist physiotherapist;
-    private Patient patient;  // NEW
-    private TreatmentStatus status; // NEW
+    private Patient patient;
+    private TreatmentStatus status;
 
     public Treatment(String name, LocalDateTime dateTime, Physiotherapist physiotherapist) {
         this.name = name;
         this.dateTime = dateTime;
         this.physiotherapist = physiotherapist;
-        this.status = TreatmentStatus.BOOKED; // Default if needed
+        this.status = TreatmentStatus.BOOKED;
     }
 
     public String getName() {

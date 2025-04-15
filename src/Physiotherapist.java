@@ -9,7 +9,7 @@ public class Physiotherapist {
     private List<String> areasOfExpertise;
     private List<WorkingTime> workingTimes;
     private List<Treatment> treatments = new ArrayList<>();
-    private int attendedCount = 0; // NEW FIELD
+    private int attendedCount = 0;
 
     public Physiotherapist(String id, String fullName, String address, String phoneNumber,
                            List<String> areasOfExpertise, List<WorkingTime> workingTimes) {
@@ -59,7 +59,7 @@ public class Physiotherapist {
         return attendedCount;
     }
 
-    // NEW METHOD TO INCREMENT COUNT
+
     public void incrementAttendedCount() {
         attendedCount++;
     }
