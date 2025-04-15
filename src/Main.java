@@ -92,6 +92,10 @@ public class Main {
         System.out.println("Enter Patient Phone Number:");
         String phone = scanner.nextLine();
 
+        // Ask for patient address here
+        System.out.println("Enter Patient Address:");
+        String address = scanner.nextLine();
+
         System.out.println("Select Physiotherapist by Number:");
         for (int i = 0; i < allPhysios.size(); i++) {
             System.out.println((i + 1) + ". " + allPhysios.get(i).getFullName());
@@ -99,10 +103,6 @@ public class Main {
         int physioChoice = scanner.nextInt() - 1;
         scanner.nextLine();  // Consume newline
         Physiotherapist selectedPhysio = allPhysios.get(physioChoice);
-
-        // Now ask for the patient's address
-        System.out.println("Enter Patient Address:");
-        String address = scanner.nextLine();
 
         System.out.println("Enter Treatment Name:");
         String treatmentName = scanner.nextLine();
@@ -120,6 +120,7 @@ public class Main {
             }
         }
 
+        // Check if the patient exists or create a new one
         Patient patient = allPatients.stream()
                 .filter(p -> p.getFullName().equalsIgnoreCase(name))
                 .findFirst()
