@@ -26,7 +26,7 @@ public class BookingService {
             for (Treatment treatment : physio.getTreatments()) {
                 if (treatment.getPatient() != null && treatment.getPatient().equals(patient)) {
                     treatment.setStatus(TreatmentStatus.CANCELLED);
-                    treatment.setPatient(null); // Clear the patient
+                    treatment.setPatient(null); 
                 }
             }
         }
