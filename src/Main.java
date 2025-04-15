@@ -214,6 +214,11 @@ public class Main {
     private static void removePatient() {
         System.out.println("Enter Patient Name to remove:");
         String name = scanner.nextLine();
+
+        System.out.println("Patients currently registered:");
+        allPatients.forEach(p -> System.out.println(p.getFullName()));
+
+
         boolean removed = allPatients.removeIf(p -> p.getFullName().equalsIgnoreCase(name));
         if (removed) {
             System.out.println("Patient removed successfully.");
