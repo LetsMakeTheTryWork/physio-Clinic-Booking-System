@@ -12,7 +12,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        // Initialize Physiotherapists
+
         Physiotherapist Sandy = new Physiotherapist("001", "Sandy Stephens", "14 Joyworld", "0765487998",
                 Arrays.asList("Physiotherapy", "Rehabilitation"),
                 Arrays.asList(new WorkingTime(DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(17, 0))));
@@ -35,12 +35,12 @@ public class Main {
 
         allPhysios.addAll(List.of(Sandy, Mark, Sarah, Ivy, Gray));
 
-        // Create dummy patients
+
         for (int i = 1; i <= 10; i++) {
             allPatients.add(new Patient("PT" + i, "Patient " + i, "Address " + i, "0700" + i + "000" + i));
         }
 
-        // Assign default treatments
+
         LocalDate startDate = LocalDate.now();
         for (Physiotherapist physio : allPhysios) {
             for (int i = 0; i < 28; i++) {
@@ -53,7 +53,7 @@ public class Main {
         BookingService bookingSystem = new BookingService();
         allPhysios.forEach(bookingSystem::addPhysiotherapist);
 
-        // Console menu
+
         while (true) {
             System.out.println("\n====== Physio Clinic App ======");
             System.out.println("1. Book Appointment");
@@ -92,16 +92,24 @@ public class Main {
         System.out.println("Enter Patient Phone Number:");
         String phone = scanner.nextLine();
 
-        // Ask for patient address here
+
         System.out.println("Enter Patient Address:");
         String address = scanner.nextLine();
 
-        System.out.println("Select Physiotherapist by Number:");
-        for (int i = 0; i < allPhysios.size(); i++) {
-            System.out.println((i + 1) + ". " + allPhysios.get(i).getFullName());
-        }
+//        System.out.println("Select Physiotherapist by Number:");
+//        for (int i = 0; i < allPhysios.size(); i++) {
+//            System.out.println((i + 1) + ". " + allPhysios.get(i).getFullName());
+//        }
+
+        System.out.println("Search Physiotherapists by expertise or name?");
+        System.out.println("1. By Expertise");
+        System.out.println("2. By Name");
+        int searchChoice = scanner.nextInt();
+        scanner.nextLine();
+
+
         int physioChoice = scanner.nextInt() - 1;
-        scanner.nextLine();  // Consume newline
+        scanner.nextLine();
         Physiotherapist selectedPhysio = allPhysios.get(physioChoice);
 
         System.out.println("Enter Treatment Name:");
@@ -120,7 +128,7 @@ public class Main {
             }
         }
 
-        // Check if the patient exists or create a new one
+
         Patient patient = allPatients.stream()
                 .filter(p -> p.getFullName().equalsIgnoreCase(name))
                 .findFirst()
