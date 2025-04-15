@@ -1,27 +1,18 @@
-//import javax.swing.*;
-//import java.awt.*;
-//import java.time.*;
-//import java.time.format.DateTimeFormatter;
-//import java.util.*;
-//import java.util.List;
-
-import javax.swing.*;
-import java.awt.*;
 import java.time.*;
 import java.util.*;
-import java.util.List;
 
 public class Main {
 
     private static final List<Patient> allPatients = new ArrayList<>();
     private static final List<Physiotherapist> allPhysios = new ArrayList<>();
+    private static final Scanner scanner = new Scanner(System.in);
 
     private static String formatAppointmentEntry(String patientName, String treatmentName, String physioName, LocalDateTime dateTime, String status) {
         return patientName + " booked " + treatmentName + " with " + physioName + " at " + dateTime + " [" + status + "]";
     }
 
     public static void main(String[] args) {
-
+        // Initialize Physiotherapists
         Physiotherapist Sandy = new Physiotherapist("001", "Sandy Stephens", "14 Joyworld", "0765487998",
                 Arrays.asList("Physiotherapy", "Rehabilitation"),
                 Arrays.asList(new WorkingTime(DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(17, 0))));
@@ -44,11 +35,12 @@ public class Main {
 
         allPhysios.addAll(List.of(Sandy, Mark, Sarah, Ivy, Gray));
 
-
+        // Create dummy patients
         for (int i = 1; i <= 10; i++) {
             allPatients.add(new Patient("PT" + i, "Patient " + i, "Address " + i, "0700" + i + "000" + i));
         }
 
+        // Assign default treatments
         LocalDate startDate = LocalDate.now();
         for (Physiotherapist physio : allPhysios) {
             for (int i = 0; i < 28; i++) {
@@ -61,234 +53,186 @@ public class Main {
         BookingService bookingSystem = new BookingService();
         allPhysios.forEach(bookingSystem::addPhysiotherapist);
 
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Physio Clinic App");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 800);
+        // Console menu
+        while (true) {
+            System.out.println("\n====== Physio Clinic App ======");
+            System.out.println("1. Book Appointment");
+            System.out.println("2. Cancel Appointment");
+            System.out.println("3. Reschedule Appointment");
+            System.out.println("4. Mark as Attended");
+            System.out.println("5. Add Patient");
+            System.out.println("6. Remove Patient");
+            System.out.println("7. Generate Report");
+            System.out.println("8. Exit");
+            System.out.print("Choose an option: ");
 
-            JPanel panel = new JPanel();
-            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-            panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline
 
-            JLabel heading = new JLabel("👋 Welcome! Book your Physio Appointment:");
-            heading.setAlignmentX(Component.CENTER_ALIGNMENT);
-            panel.add(heading);
-
-            panel.add(new JLabel("Patient Name:"));
-            JTextField nameField = new JTextField();
-            nameField.setMaximumSize(new Dimension(300, 25));
-            panel.add(nameField);
-
-            panel.add(new JLabel("Phone Number:"));
-            JTextField phoneField = new JTextField();
-            phoneField.setMaximumSize(new Dimension(300, 25));
-            panel.add(phoneField);
-
-            panel.add(new JLabel("Filter by Area of Expertise:"));
-            JComboBox<String> expertiseDropdown = new JComboBox<>();
-            Set<String> allExpertise = new HashSet<>();
-            for (Physiotherapist p : bookingSystem.getAllPhysiotherapists()) {
-                allExpertise.addAll(p.getAreasOfExpertise());
-            }
-            expertiseDropdown.addItem("-- Select --");
-            allExpertise.forEach(expertiseDropdown::addItem);
-            panel.add(expertiseDropdown);
-
-            panel.add(new JLabel("Choose Physiotherapist:"));
-            JComboBox<Physiotherapist> physioDropdown = new JComboBox<>();
-            bookingSystem.getAllPhysiotherapists().forEach(physioDropdown::addItem);
-            panel.add(physioDropdown);
-
-            panel.add(new JLabel("Treatment Name:"));
-            JTextField treatmentField = new JTextField();
-            treatmentField.setMaximumSize(new Dimension(300, 25));
-            panel.add(treatmentField);
-
-            panel.add(new JLabel("Available Treatments for Selected Physio:"));
-            DefaultListModel<String> treatmentListModel = new DefaultListModel<>();
-            JList<String> treatmentList = new JList<>(treatmentListModel);
-            JScrollPane treatmentScroll = new JScrollPane(treatmentList);
-            treatmentScroll.setPreferredSize(new Dimension(500, 80));
-            panel.add(treatmentScroll);
-
-            panel.add(new JLabel("Select Date:"));
-            JSpinner dateSpinner = new JSpinner(new SpinnerDateModel());
-            dateSpinner.setEditor(new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd"));
-            panel.add(dateSpinner);
-
-            panel.add(new JLabel("Select Time:"));
-            JSpinner timeSpinner = new JSpinner(new SpinnerDateModel());
-            timeSpinner.setEditor(new JSpinner.DateEditor(timeSpinner, "HH:mm"));
-            panel.add(timeSpinner);
-
-            DefaultListModel<String> bookedListModel = new DefaultListModel<>();
-            JList<String> bookedList = new JList<>(bookedListModel);
-            JScrollPane scrollPane = new JScrollPane(bookedList);
-            scrollPane.setPreferredSize(new Dimension(500, 150));
-
-            JButton bookBtn = new JButton("📅 Book Appointment");
-            JButton cancelBtn = new JButton("❌ Cancel Appointment");
-            JButton rescheduleBtn = new JButton("🔁 Reschedule");
-            JButton attendBtn = new JButton("✅ Mark as Attended");
-            JButton addPatientBtn = new JButton("➕ Add Patient");
-            JButton removePatientBtn = new JButton("➖ Remove Patient");
-            JButton reportBtn = new JButton("📄 Generate Report");
-
-            expertiseDropdown.addActionListener(e -> {
-                String selectedExpertise = (String) expertiseDropdown.getSelectedItem();
-                physioDropdown.removeAllItems();
-                for (Physiotherapist p : bookingSystem.getAllPhysiotherapists()) {
-                    if (selectedExpertise.equals("-- Select --") || p.getAreasOfExpertise().contains(selectedExpertise)) {
-                        physioDropdown.addItem(p);
-                    }
-                }
-            });
-
-            physioDropdown.addActionListener(e -> {
-                treatmentListModel.clear();
-                Physiotherapist selected = (Physiotherapist) physioDropdown.getSelectedItem();
-                if (selected != null) {
-                    for (Treatment t : selected.getAvailableTreatments()) {
-                        treatmentListModel.addElement(t.getName() + " - " + t.getDateTime().toString());
-                    }
-                }
-            });
-
-            treatmentList.addListSelectionListener(e -> {
-                String selected = treatmentList.getSelectedValue();
-                if (selected != null) {
-                    String[] parts = selected.split(" - ");
-                    if (parts.length == 2) {
-                        treatmentField.setText(parts[0]);
-                        LocalDateTime dt = LocalDateTime.parse(parts[1]);
-                        Date date = Date.from(dt.atZone(ZoneId.systemDefault()).toInstant());
-                        dateSpinner.setValue(date);
-                        timeSpinner.setValue(date);
-                    }
-                }
-            });
-
-            // ✅ Updated to include collision check
-            bookBtn.addActionListener(e -> {
-                String name = nameField.getText().trim();
-                String phone = phoneField.getText().trim();
-                Physiotherapist selectedPhysio = (Physiotherapist) physioDropdown.getSelectedItem();
-                String treatmentName = treatmentField.getText().trim();
-
-                Date selectedDate = ((SpinnerDateModel) dateSpinner.getModel()).getDate();
-                Date selectedTime = ((SpinnerDateModel) timeSpinner.getModel()).getDate();
-
-                if (name.isEmpty() || phone.isEmpty() || treatmentName.isEmpty() || selectedPhysio == null) {
-                    JOptionPane.showMessageDialog(frame, "Please fill in all the fields.", "Missing Info", JOptionPane.ERROR_MESSAGE);
+            switch (choice) {
+                case 1 -> bookAppointment(bookingSystem);
+                case 2 -> cancelAppointment();
+                case 3 -> rescheduleAppointment();
+                case 4 -> markAsAttended();
+                case 5 -> addPatient();
+                case 6 -> removePatient();
+                case 7 -> generateReport();
+                case 8 -> {
+                    System.out.println("Exiting the program...");
                     return;
                 }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
 
-                LocalDateTime dateTime = LocalDateTime.of(
-                        selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
-                        selectedTime.toInstant().atZone(ZoneId.systemDefault()).toLocalTime()
-                );
+    private static void bookAppointment(BookingService bookingSystem) {
+        System.out.println("Enter Patient Name:");
+        String name = scanner.nextLine();
+        System.out.println("Enter Patient Phone Number:");
+        String phone = scanner.nextLine();
 
-                // 🛑 Check for time conflict
-                for (Treatment t : selectedPhysio.getTreatments()) {
-                    if (t.getDateTime().equals(dateTime) && t.getPatient() != null) {
-                        JOptionPane.showMessageDialog(frame, "This session is already booked!", "Booking Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
+        System.out.println("Select Physiotherapist by Number:");
+        for (int i = 0; i < allPhysios.size(); i++) {
+            System.out.println((i + 1) + ". " + allPhysios.get(i).getFullName());
+        }
+        int physioChoice = scanner.nextInt() - 1;
+        scanner.nextLine();  // Consume newline
+        Physiotherapist selectedPhysio = allPhysios.get(physioChoice);
+
+        System.out.println("Enter Treatment Name:");
+        String treatmentName = scanner.nextLine();
+
+        System.out.println("Enter Date (yyyy-MM-dd):");
+        String dateStr = scanner.nextLine();
+        System.out.println("Enter Time (HH:mm):");
+        String timeStr = scanner.nextLine();
+        LocalDateTime dateTime = LocalDateTime.parse(dateStr + "T" + timeStr);
+
+        for (Treatment t : selectedPhysio.getTreatments()) {
+            if (t.getDateTime().equals(dateTime) && t.getPatient() != null) {
+                System.out.println("This session is already booked!");
+                return;
+            }
+        }
+
+        Patient patient = allPatients.stream()
+                .filter(p -> p.getFullName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElseGet(() -> {
+                    Patient newP = new Patient(UUID.randomUUID().toString(), name, "", phone);
+                    allPatients.add(newP);
+                    return newP;
+                });
+
+        Treatment treatment = new Treatment(treatmentName, dateTime, selectedPhysio);
+        treatment.setPatient(patient);
+        treatment.setStatus(TreatmentStatus.BOOKED);
+        selectedPhysio.addTreatment(treatment);
+
+        bookingSystem.bookAppointment(patient, treatment);
+        System.out.println(formatAppointmentEntry(name, treatmentName, selectedPhysio.getFullName(), dateTime, "Booked"));
+    }
+
+    private static void cancelAppointment() {
+        System.out.println("Enter Patient Name to cancel appointment:");
+        String name = scanner.nextLine();
+        for (Physiotherapist physio : allPhysios) {
+            for (Treatment t : physio.getTreatments()) {
+                if (t.getPatient() != null && t.getPatient().getFullName().equalsIgnoreCase(name)) {
+                    t.setPatient(null);
+                    t.setStatus(TreatmentStatus.BOOKED);
+                    System.out.println("Appointment cancelled for: " + name);
+                    return;
                 }
+            }
+        }
+        System.out.println("No appointment found for this patient.");
+    }
 
-                Patient patient = new Patient(UUID.randomUUID().toString(), name, "", phone);
-                Treatment treatment = new Treatment(treatmentName, dateTime, selectedPhysio);
-                treatment.setPatient(patient);
-                treatment.setStatus(TreatmentStatus.BOOKED);
-                selectedPhysio.addTreatment(treatment);
+    private static void rescheduleAppointment() {
+        System.out.println("Enter Patient Name to reschedule appointment:");
+        String name = scanner.nextLine();
+        for (Physiotherapist physio : allPhysios) {
+            for (Treatment t : physio.getTreatments()) {
+                if (t.getPatient() != null && t.getPatient().getFullName().equalsIgnoreCase(name)) {
+                    System.out.println("Enter new date (yyyy-MM-dd):");
+                    String dateStr = scanner.nextLine();
+                    System.out.println("Enter new time (HH:mm):");
+                    String timeStr = scanner.nextLine();
+                    LocalDateTime newDateTime = LocalDateTime.parse(dateStr + "T" + timeStr);
 
-                bookingSystem.bookAppointment(patient, treatment);
-                bookedListModel.addElement(formatAppointmentEntry(name, treatmentName, selectedPhysio.getFullName(), dateTime, "Booked"));
-                JOptionPane.showMessageDialog(frame, "Appointment successfully booked!");
-            });
-
-            cancelBtn.addActionListener(e -> {
-                int selectedIndex = bookedList.getSelectedIndex();
-                if (selectedIndex == -1) return;
-                String entry = bookedListModel.get(selectedIndex);
-                bookedListModel.set(selectedIndex, entry.replaceAll("\\[.*?\\]$", "[Cancelled]"));
-            });
-
-            rescheduleBtn.addActionListener(e -> {
-                int selectedIndex = bookedList.getSelectedIndex();
-                if (selectedIndex == -1) return;
-                String entry = bookedListModel.get(selectedIndex);
-                String[] parts = entry.split(" booked | with | at ");
-                if (parts.length >= 4) {
-                    nameField.setText(parts[1].trim());
-                    treatmentField.setText(parts[2].trim());
-                    LocalDateTime dt = LocalDateTime.parse(parts[3].split(" \\[")[0]);
-                    Date date = Date.from(dt.atZone(ZoneId.systemDefault()).toInstant());
-                    dateSpinner.setValue(date);
-                    timeSpinner.setValue(date);
-                    bookedListModel.remove(selectedIndex);
-                }
-            });
-
-            attendBtn.addActionListener(e -> {
-                int selectedIndex = bookedList.getSelectedIndex();
-                if (selectedIndex == -1) return;
-                String entry = bookedListModel.get(selectedIndex);
-                bookedListModel.set(selectedIndex, entry.replaceAll("\\[.*?\\]$", "[Attended]"));
-            });
-
-            addPatientBtn.addActionListener(e -> {
-                String name = nameField.getText().trim();
-                String phone = phoneField.getText().trim();
-                if (!name.isEmpty() && !phone.isEmpty()) {
-                    allPatients.add(new Patient(UUID.randomUUID().toString(), name, "", phone));
-                    JOptionPane.showMessageDialog(frame, "✅ Patient added.");
-                } else {
-                    JOptionPane.showMessageDialog(frame, "Enter both name and phone.");
-                }
-            });
-
-            removePatientBtn.addActionListener(e -> {
-                String name = nameField.getText().trim();
-                boolean removed = allPatients.removeIf(p -> p.getFullName().equalsIgnoreCase(name));
-                JOptionPane.showMessageDialog(frame, removed ? "🗑️ Patient removed." : "❌ Patient not found.");
-            });
-
-            reportBtn.addActionListener(e -> {
-                System.out.println("\n=== End of Term Report ===");
-                for (Physiotherapist physio : allPhysios) {
-                    System.out.println("\nPhysiotherapist: " + physio.getFullName());
-                    for (Treatment t : physio.getTreatments()) {
-                        if (t.getPatient() != null) {
-                            System.out.println("  Treatment: " + t.getName() + ", Patient: " + t.getPatient().getFullName() +
-                                    ", Time: " + t.getDateTime() + ", Status: " + t.getStatus());
+                    for (Treatment other : physio.getTreatments()) {
+                        if (other.getDateTime().equals(newDateTime) && other.getPatient() != null) {
+                            System.out.println("New slot is already booked.");
+                            return;
                         }
                     }
+
+                    t.setDateTime(newDateTime);
+                    System.out.println("Appointment rescheduled for: " + name);
+                    return;
                 }
-
-                System.out.println("\n=== Physiotherapist Ranking by Attended Appointments ===");
-                allPhysios.stream()
-                        .sorted((p1, p2) -> Integer.compare(p2.getAttendedCount(), p1.getAttendedCount()))
-                        .forEach(p -> System.out.println(p.getFullName() + " - Attended: " + p.getAttendedCount()));
-            });
-            physioDropdown.removeAllItems();
-            for (Physiotherapist p : bookingSystem.getAllPhysiotherapists()) {
-                physioDropdown.addItem(p);
             }
+        }
+        System.out.println("No appointment found for this patient.");
+    }
 
-            panel.add(bookBtn);
-            panel.add(cancelBtn);
-            panel.add(rescheduleBtn);
-            panel.add(attendBtn);
-            panel.add(addPatientBtn);
-            panel.add(removePatientBtn);
-            panel.add(reportBtn);
-            panel.add(new JLabel("📋 Booked Appointments:"));
-            panel.add(scrollPane);
+    private static void markAsAttended() {
+        System.out.println("Enter Patient Name to mark appointment as attended:");
+        String name = scanner.nextLine();
+        for (Physiotherapist physio : allPhysios) {
+            for (Treatment t : physio.getTreatments()) {
+                if (t.getPatient() != null &&
+                        t.getPatient().getFullName().equalsIgnoreCase(name) &&
+                        t.getStatus() == TreatmentStatus.BOOKED) {
 
-            frame.getContentPane().add(panel);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
+                    t.setStatus(TreatmentStatus.ATTENDED);
+                    physio.incrementAttendedCount();
+                    System.out.println("Marked as attended for: " + name);
+                    return;
+                }
+            }
+        }
+        System.out.println("No booked appointment found for this patient.");
+    }
+
+    private static void addPatient() {
+        System.out.println("Enter New Patient Name:");
+        String name = scanner.nextLine();
+        System.out.println("Enter Patient Phone Number:");
+        String phone = scanner.nextLine();
+        Patient newPatient = new Patient(UUID.randomUUID().toString(), name, "", phone);
+        allPatients.add(newPatient);
+        System.out.println("Patient added successfully.");
+    }
+
+    private static void removePatient() {
+        System.out.println("Enter Patient Name to remove:");
+        String name = scanner.nextLine();
+        boolean removed = allPatients.removeIf(p -> p.getFullName().equalsIgnoreCase(name));
+        if (removed) {
+            System.out.println("Patient removed successfully.");
+        } else {
+            System.out.println("Patient not found.");
+        }
+    }
+
+    private static void generateReport() {
+        System.out.println("\n=== End of Term Report ===");
+        for (Physiotherapist physio : allPhysios) {
+            System.out.println("\nPhysiotherapist: " + physio.getFullName());
+            for (Treatment t : physio.getTreatments()) {
+                if (t.getPatient() != null) {
+                    System.out.println("  Treatment: " + t.getName() + ", Patient: " + t.getPatient().getFullName() +
+                            ", Time: " + t.getDateTime() + ", Status: " + t.getStatus());
+                }
+            }
+        }
+
+        System.out.println("\n=== Physiotherapist Ranking by Attended Appointments ===");
+        allPhysios.stream()
+                .sorted((p1, p2) -> Integer.compare(p2.getAttendedCount(), p1.getAttendedCount()))
+                .forEach(p -> System.out.println(p.getFullName() + " - Attended: " + p.getAttendedCount()));
     }
 }

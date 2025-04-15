@@ -34,6 +34,11 @@ public class Treatment {
         this.patient = patient;
     }
 
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
+
     public TreatmentStatus getStatus() {
         return status;
     }

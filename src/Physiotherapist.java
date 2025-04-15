@@ -8,7 +8,8 @@ public class Physiotherapist {
     private String phoneNumber;
     private List<String> areasOfExpertise;
     private List<WorkingTime> workingTimes;
-    private List<Treatment> treatments = new ArrayList<>(); // Holds assigned treatments
+    private List<Treatment> treatments = new ArrayList<>();
+    private int attendedCount = 0; // NEW FIELD
 
     public Physiotherapist(String id, String fullName, String address, String phoneNumber,
                            List<String> areasOfExpertise, List<WorkingTime> workingTimes) {
@@ -41,6 +42,7 @@ public class Physiotherapist {
     public String getFullName() {
         return fullName;
     }
+
     public String getAddress() {
         return address;
     }
@@ -54,13 +56,12 @@ public class Physiotherapist {
     }
 
     public int getAttendedCount() {
-        int count = 0;
-        for (Treatment t : treatments) {
-            if (t.getStatus() == TreatmentStatus.ATTENDED) {
-                count++;
-            }
-        }
-        return count;
+        return attendedCount;
+    }
+
+    // NEW METHOD TO INCREMENT COUNT
+    public void incrementAttendedCount() {
+        attendedCount++;
     }
 
     @Override
