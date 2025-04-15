@@ -53,7 +53,7 @@ public class Main {
         BookingService bookingSystem = new BookingService();
         allPhysios.forEach(bookingSystem::addPhysiotherapist);
 
-        // Console menu
+        
         while (true) {
             System.out.println("\n====== Physio Clinic App ======");
             System.out.println("1. Book Appointment");
