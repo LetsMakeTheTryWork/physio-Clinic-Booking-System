@@ -92,7 +92,7 @@ public class Main {
         System.out.println("Enter Patient Phone Number:");
         String phone = scanner.nextLine();
 
-        // Ask for patient address here
+        
         System.out.println("Enter Patient Address:");
         String address = scanner.nextLine();
 
