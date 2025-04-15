@@ -96,16 +96,10 @@ public class Main {
         System.out.println("Enter Patient Address:");
         String address = scanner.nextLine();
 
-//        System.out.println("Select Physiotherapist by Number:");
-//        for (int i = 0; i < allPhysios.size(); i++) {
-//            System.out.println((i + 1) + ". " + allPhysios.get(i).getFullName());
-//        }
-
-        System.out.println("Search Physiotherapists by expertise or name?");
-        System.out.println("1. By Expertise");
-        System.out.println("2. By Name");
-        int searchChoice = scanner.nextInt();
-        scanner.nextLine();
+        System.out.println("Select Physiotherapist by Number:");
+        for (int i = 0; i < allPhysios.size(); i++) {
+            System.out.println((i + 1) + ". " + allPhysios.get(i).getFullName());
+        }
 
 
         int physioChoice = scanner.nextInt() - 1;
