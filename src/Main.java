@@ -100,6 +100,10 @@ public class Main {
         scanner.nextLine();  // Consume newline
         Physiotherapist selectedPhysio = allPhysios.get(physioChoice);
 
+        // Now ask for the patient's address
+        System.out.println("Enter Patient Address:");
+        String address = scanner.nextLine();
+
         System.out.println("Enter Treatment Name:");
         String treatmentName = scanner.nextLine();
 
@@ -120,7 +124,7 @@ public class Main {
                 .filter(p -> p.getFullName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElseGet(() -> {
-                    Patient newP = new Patient(UUID.randomUUID().toString(), name, "", phone);
+                    Patient newP = new Patient(UUID.randomUUID().toString(), name, address, phone);
                     allPatients.add(newP);
                     return newP;
                 });
