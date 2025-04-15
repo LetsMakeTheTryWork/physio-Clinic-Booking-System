@@ -51,7 +51,8 @@ public class Main {
             }
         }
 
-
+        BookingService bookingSystem = new BookingService();
+        allPhysios.forEach(bookingSystem::addPhysiotherapist);
 
 
         while (true) {
