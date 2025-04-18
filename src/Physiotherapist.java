@@ -19,6 +19,7 @@ public class Physiotherapist {
         this.phoneNumber = phoneNumber;
         this.areasOfExpertise = areasOfExpertise;
         this.workingTimes = workingTimes;
+
     }
 
     public List<Treatment> getTreatments() {

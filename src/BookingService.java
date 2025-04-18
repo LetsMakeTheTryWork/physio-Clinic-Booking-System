@@ -1,6 +1,5 @@
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.DayOfWeek;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,11 +21,11 @@ public class BookingService {
     }
 
     public boolean removePatient(Patient patient) {
-        for (Physiotherapist physio : physiotherapists) {
+          for (Physiotherapist physio : physiotherapists) {
             for (Treatment treatment : physio.getTreatments()) {
                 if (treatment.getPatient() != null && treatment.getPatient().equals(patient)) {
                     treatment.setStatus(TreatmentStatus.CANCELLED);
-                    treatment.setPatient(null);
+                    treatment.setPatient(null); // Clear the patient
                 }
             }
         }
@@ -100,7 +99,7 @@ public class BookingService {
             }
         }
 
-        System.out.println("\n🏆 PHYSIOTHERAPIST PERFORMANCE (by attended sessions):");
+        System.out.println("\n PHYSIOTHERAPIST PERFORMANCE (by attended sessions):");
 
         physiotherapists.stream()
                 .sorted((a, b) -> {
@@ -115,35 +114,5 @@ public class BookingService {
                             .filter(t -> t.getStatus() == TreatmentStatus.ATTENDED).count();
                     System.out.println(p.getFullName() + " - " + attended + " attended appointments");
                 });
-    }
-
-    // ✅ NEW: Generates a unique 4-week term schedule with varied treatments
-    public void generateSampleTermSchedule() {
-        String[] treatmentNames = {"Back Pain Therapy", "Shoulder Rehab", "Knee Strengthening", "Posture Correction"};
-        Random random = new Random();
-
-        for (Physiotherapist physio : physiotherapists) {
-            physio.clearTreatments(); // Clear previous schedule
-
-            for (int week = 0; week < 4; week++) {
-                for (int day = 1; day <= 5; day++) { // Monday to Friday
-                    int numSessions = 1 + random.nextInt(3); // 1 to 3 sessions/day
-
-                    for (int session = 0; session < numSessions; session++) {
-                        LocalDateTime dateTime = LocalDate.now()
-                                .with(DayOfWeek.MONDAY)
-                                .plusWeeks(week)
-                                .plusDays(day - 1)
-                                .atTime(9 + session * 2, 0);
-
-                        String treatmentName = treatmentNames[random.nextInt(treatmentNames.length)];
-                        Treatment treatment = new Treatment(treatmentName, physio, dateTime);
-                        physio.addTreatment(treatment);
-                    }
-                }
-            }
-        }
-
-        System.out.println("✅ 4-week unique treatment schedule generated!");
     }
 }
