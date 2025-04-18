@@ -1,4 +1,3 @@
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,11 +20,11 @@ public class BookingService {
     }
 
     public boolean removePatient(Patient patient) {
-          for (Physiotherapist physio : physiotherapists) {
-            for (Treatment treatment : physio.getTreatments()) {
+        for (Physiotherapist physio : physiotherapists) {
+            for (Treatment treatment : physio.getAvailableTreatments()) {
                 if (treatment.getPatient() != null && treatment.getPatient().equals(patient)) {
                     treatment.setStatus(TreatmentStatus.CANCELLED);
-                    treatment.setPatient(null); // Clear the patient
+                    treatment.setPatient(null);
                 }
             }
         }
@@ -61,6 +60,10 @@ public class BookingService {
     }
 
     public boolean bookAppointment(Patient patient, Treatment treatment) {
+        if (treatment.getStatus() == TreatmentStatus.BOOKED) {
+            System.out.println("Appointment already booked.");
+            return false;
+        }
         treatment.setPatient(patient);
         treatment.setStatus(TreatmentStatus.BOOKED);
         System.out.println(patient.getFullName() + " booked " + treatment.getName() + " with " +
@@ -69,15 +72,21 @@ public class BookingService {
     }
 
     public boolean cancelAppointment(Patient patient, Treatment treatment) {
-        treatment.setStatus(TreatmentStatus.CANCELLED);
-        System.out.println(patient.getFullName() + " cancelled their appointment for " + treatment.getName() +
-                " with " + treatment.getPhysiotherapist().getFullName() + " on " + treatment.getDateTime());
-        return true;
+        if (treatment.getPatient() != null && treatment.getPatient().equals(patient)) {
+            treatment.setStatus(TreatmentStatus.CANCELLED);
+            treatment.setPatient(null);
+            System.out.println(patient.getFullName() + " cancelled their appointment for " + treatment.getName() +
+                    " with " + treatment.getPhysiotherapist().getFullName() + " on " + treatment.getDateTime());
+            return true;
+        }
+        return false;
     }
 
     public boolean changeAppointment(Patient patient, Treatment oldTreatment, Treatment newTreatment) {
-        cancelAppointment(patient, oldTreatment);
-        return bookAppointment(patient, newTreatment);
+        if (cancelAppointment(patient, oldTreatment)) {
+            return bookAppointment(patient, newTreatment);
+        }
+        return false;
     }
 
     public List<Physiotherapist> getAllPhysiotherapists() {
