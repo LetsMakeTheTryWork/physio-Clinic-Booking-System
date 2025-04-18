@@ -9,6 +9,7 @@ public class BookingService {
     public BookingService() {
         physiotherapists = new ArrayList<>();
         patients = new ArrayList<>();
+
     }
 
     public void addPhysiotherapist(Physiotherapist physiotherapist) {
