@@ -96,7 +96,7 @@ public class Main {
             System.out.println("Please enter the patient's address:");
             String address = scanner.nextLine();
 
-            // Select Physiotherapist
+
             System.out.println("Which physiotherapist would you like to book with? Please select by number:");
             for (int i = 0; i < allPhysios.size(); i++) {
                 System.out.println((i + 1) + ". " + allPhysios.get(i).getFullName());
@@ -109,26 +109,26 @@ public class Main {
             }
             Physiotherapist selectedPhysio = allPhysios.get(physioChoice);
 
-            // Enter Treatment Name
+
             System.out.println("What treatment would you like to book for? (e.g., Physiotherapy, Sports Therapy, etc.):");
             String treatmentName = scanner.nextLine();
 
-            // Enter Date and Time
+
             System.out.println("Please enter the date for the appointment (in yyyy-MM-dd format, e.g., 2025-10-09):");
             String dateStr = scanner.nextLine();
 
             System.out.println("Now, enter the time for the appointment (in HH:mm or HHmm format, e.g., 09:30 or 0930):");
             String timeStr = scanner.nextLine();
 
-            // Normalize the time format if needed (convert 0930 to 09:30)
+
             if (timeStr.length() == 4) {
                 timeStr = timeStr.substring(0, 2) + ":" + timeStr.substring(2);
             }
 
-            // Combine date and time into LocalDateTime object
+
             LocalDateTime dateTime = LocalDateTime.parse(dateStr + "T" + timeStr);
 
-            // Check if the time slot is already taken
+
             for (Treatment t : selectedPhysio.getTreatments()) {
                 if (t.getDateTime().equals(dateTime) && t.getPatient() != null) {
                     System.out.println("Sorry, this time slot is already booked! Please choose a different time.");
@@ -136,7 +136,7 @@ public class Main {
                 }
             }
 
-            // Check if the patient exists or create a new one
+
             Patient patient = allPatients.stream()
                     .filter(p -> p.getFullName().equalsIgnoreCase(name))
                     .findFirst()
@@ -146,7 +146,7 @@ public class Main {
                         return newP;
                     });
 
-            // Create a new treatment and assign the patient to it
+
             Treatment treatment = new Treatment(treatmentName, dateTime, selectedPhysio);
             treatment.setPatient(patient);
             treatment.setStatus(TreatmentStatus.BOOKED);
