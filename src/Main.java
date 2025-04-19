@@ -17,15 +17,19 @@ public class Main {
                 new Physiotherapist("001", "Sandy Stephens", "14 Joyworld", "0765487998",
                         List.of("Physiotherapy", "Rehabilitation"),
                         List.of(new WorkingTime(DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(17, 0)))),
+
                 new Physiotherapist("002", "Mark Hillary", "45 Meadow Way", "0787654321",
                         List.of("Osteopathy"),
                         List.of(new WorkingTime(DayOfWeek.TUESDAY, LocalTime.of(10, 0), LocalTime.of(16, 0)))),
+
                 new Physiotherapist("003", "Sarah Roberts", "40 Spring Avenue", "0745965334",
                         List.of("Neurology"),
                         List.of(new WorkingTime(DayOfWeek.WEDNESDAY, LocalTime.of(8, 0), LocalTime.of(14, 0)))),
+
                 new Physiotherapist("004", "Blake Ivy", "100 GreenDrive", "0724567989",
                         List.of("Sports Therapy"),
                         List.of(new WorkingTime(DayOfWeek.THURSDAY, LocalTime.of(11, 0), LocalTime.of(18, 0)))),
+
                 new Physiotherapist("005", "Evans Gray", "15 Cavendish Street", "0793547689",
                         List.of("Pediatric Physiotherapy"),
                         List.of(new WorkingTime(DayOfWeek.FRIDAY, LocalTime.of(9, 0), LocalTime.of(15, 0))))
@@ -82,43 +86,57 @@ public class Main {
 
     private static void bookAppointment(BookingService bookingSystem) {
         try {
-            System.out.println("Enter Patient Name:");
+            // Collect Patient Details
+            System.out.println("Please enter the patient's full name:");
             String name = scanner.nextLine();
 
-            System.out.println("Enter Patient Phone Number:");
+            System.out.println("Now, enter the patient's phone number (e.g., 0700123456):");
             String phone = scanner.nextLine();
 
-            System.out.println("Enter Patient Address:");
+            System.out.println("Please enter the patient's address:");
             String address = scanner.nextLine();
 
-            System.out.println("Select Physiotherapist by Number:");
+            // Select Physiotherapist
+            System.out.println("Which physiotherapist would you like to book with? Please select by number:");
             for (int i = 0; i < allPhysios.size(); i++) {
                 System.out.println((i + 1) + ". " + allPhysios.get(i).getFullName());
             }
 
             int physioChoice = Integer.parseInt(scanner.nextLine()) - 1;
             if (physioChoice < 0 || physioChoice >= allPhysios.size()) {
-                System.out.println("Invalid physiotherapist selection.");
+                System.out.println("Oops! Invalid physiotherapist selection. Please choose a valid number.");
                 return;
             }
             Physiotherapist selectedPhysio = allPhysios.get(physioChoice);
 
-            System.out.println("Enter Treatment Name:");
+            // Enter Treatment Name
+            System.out.println("What treatment would you like to book for? (e.g., Physiotherapy, Sports Therapy, etc.):");
             String treatmentName = scanner.nextLine();
 
-            System.out.println("Enter Date (yyyy-MM-dd):");
+            // Enter Date and Time
+            System.out.println("Please enter the date for the appointment (in yyyy-MM-dd format, e.g., 2025-10-09):");
             String dateStr = scanner.nextLine();
-            System.out.println("Enter Time (HH:mm):");
+
+            System.out.println("Now, enter the time for the appointment (in HH:mm or HHmm format, e.g., 09:30 or 0930):");
             String timeStr = scanner.nextLine();
+
+            // Normalize the time format if needed (convert 0930 to 09:30)
+            if (timeStr.length() == 4) {
+                timeStr = timeStr.substring(0, 2) + ":" + timeStr.substring(2);
+            }
+
+            // Combine date and time into LocalDateTime object
             LocalDateTime dateTime = LocalDateTime.parse(dateStr + "T" + timeStr);
 
+            // Check if the time slot is already taken
             for (Treatment t : selectedPhysio.getTreatments()) {
                 if (t.getDateTime().equals(dateTime) && t.getPatient() != null) {
-                    System.out.println("This session is already booked!");
+                    System.out.println("Sorry, this time slot is already booked! Please choose a different time.");
                     return;
                 }
             }
 
+            // Check if the patient exists or create a new one
             Patient patient = allPatients.stream()
                     .filter(p -> p.getFullName().equalsIgnoreCase(name))
                     .findFirst()
@@ -128,16 +146,21 @@ public class Main {
                         return newP;
                     });
 
+            // Create a new treatment and assign the patient to it
             Treatment treatment = new Treatment(treatmentName, dateTime, selectedPhysio);
             treatment.setPatient(patient);
             treatment.setStatus(TreatmentStatus.BOOKED);
-            selectedPhysio.addTreatment(treatment);
 
+            selectedPhysio.addTreatment(treatment);
             bookingSystem.bookAppointment(patient, treatment);
-            System.out.println(formatAppointmentEntry(name, treatmentName, selectedPhysio.getFullName(), dateTime, "Booked"));
+
+            System.out.println("Your appointment is successfully booked!");
+            System.out.println("Patient: " + name + " | Treatment: " + treatmentName + " | Physiotherapist: " + selectedPhysio.getFullName());
+            System.out.println("Date: " + dateStr + " | Time: " + timeStr);
+            System.out.println("Status: " + TreatmentStatus.BOOKED);
 
         } catch (Exception e) {
-            System.out.println("Invalid input format. Booking failed.");
+            System.out.println("Oops! Something went wrong. Please check the date/time format and try again.");
         }
     }
 
