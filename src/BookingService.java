@@ -1,6 +1,7 @@
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.WeekFields;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class BookingService {
     List<Physiotherapist> physiotherapists;
@@ -9,7 +10,6 @@ public class BookingService {
     public BookingService() {
         physiotherapists = new ArrayList<>();
         patients = new ArrayList<>();
-
     }
 
     public void addPhysiotherapist(Physiotherapist physiotherapist) {
@@ -22,7 +22,8 @@ public class BookingService {
 
     public boolean removePatient(Patient patient) {
         for (Physiotherapist physio : physiotherapists) {
-            for (Treatment treatment : physio.getAvailableTreatments()) {
+            int week = getWeekOfMonth(LocalDate.now());
+            for (Treatment treatment : physio.getAvailableTreatments(week)) {
                 if (treatment.getPatient() != null && treatment.getPatient().equals(patient)) {
                     treatment.setStatus(TreatmentStatus.CANCELLED);
                     treatment.setPatient(null);
@@ -33,10 +34,11 @@ public class BookingService {
     }
 
     public List<Treatment> getAvailableTreatmentsByExpertise(String expertise, LocalDateTime date) {
+        int week = getWeekOfMonth(date.toLocalDate());
         List<Treatment> availableTreatments = new ArrayList<>();
         for (Physiotherapist physio : physiotherapists) {
             if (physio.getAreasOfExpertise().contains(expertise)) {
-                for (Treatment treatment : physio.getAvailableTreatments()) {
+                for (Treatment treatment : physio.getAvailableTreatments(week)) {
                     if (treatment.getDateTime().equals(date)) {
                         availableTreatments.add(treatment);
                     }
@@ -47,10 +49,11 @@ public class BookingService {
     }
 
     public List<Treatment> getAvailableTreatmentsByPhysiotherapist(String physiotherapistName, LocalDateTime date) {
+        int week = getWeekOfMonth(date.toLocalDate());
         List<Treatment> availableTreatments = new ArrayList<>();
         for (Physiotherapist physio : physiotherapists) {
             if (physio.getFullName().equals(physiotherapistName)) {
-                for (Treatment treatment : physio.getAvailableTreatments()) {
+                for (Treatment treatment : physio.getAvailableTreatments(week)) {
                     if (treatment.getDateTime().equals(date)) {
                         availableTreatments.add(treatment);
                     }
@@ -99,13 +102,14 @@ public class BookingService {
 
         for (Physiotherapist physio : physiotherapists) {
             System.out.println("\n👨‍⚕️ " + physio.getFullName());
-
-            for (Treatment treatment : physio.getAvailableTreatments()) {
-                String patientName = treatment.getPatient() != null ? treatment.getPatient().getFullName() : "None";
-                System.out.println("• " + treatment.getName() +
-                        " | Time: " + treatment.getDateTime() +
-                        " | Patient: " + patientName +
-                        " | Status: " + treatment.getStatus());
+            for (int week = 1; week <= 4; week++) {
+                for (Treatment treatment : physio.getAvailableTreatments(week)) {
+                    String patientName = treatment.getPatient() != null ? treatment.getPatient().getFullName() : "None";
+                    System.out.println("• " + treatment.getName() +
+                            " | Time: " + treatment.getDateTime() +
+                            " | Patient: " + patientName +
+                            " | Status: " + treatment.getStatus());
+                }
             }
         }
 
@@ -113,16 +117,28 @@ public class BookingService {
 
         physiotherapists.stream()
                 .sorted((a, b) -> {
-                    long attendedB = b.getAvailableTreatments().stream()
-                            .filter(t -> t.getStatus() == TreatmentStatus.ATTENDED).count();
-                    long attendedA = a.getAvailableTreatments().stream()
-                            .filter(t -> t.getStatus() == TreatmentStatus.ATTENDED).count();
+                    long attendedB = countAttendedTreatments(b);
+                    long attendedA = countAttendedTreatments(a);
                     return Long.compare(attendedB, attendedA);
                 })
                 .forEach(p -> {
-                    long attended = p.getAvailableTreatments().stream()
-                            .filter(t -> t.getStatus() == TreatmentStatus.ATTENDED).count();
+                    long attended = countAttendedTreatments(p);
                     System.out.println(p.getFullName() + " - " + attended + " attended appointments");
                 });
+    }
+
+    private long countAttendedTreatments(Physiotherapist physio) {
+        long count = 0;
+        for (int week = 1; week <= 4; week++) {
+            count += physio.getAvailableTreatments(week).stream()
+                    .filter(t -> t.getStatus() == TreatmentStatus.ATTENDED)
+                    .count();
+        }
+        return count;
+    }
+
+    private int getWeekOfMonth(LocalDate date) {
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        return date.get(weekFields.weekOfMonth());
     }
 }
