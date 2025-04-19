@@ -93,37 +93,73 @@ public class Main {
             System.out.println("Please enter the patient's address:");
             String address = scanner.nextLine();
 
-            System.out.println("Which physiotherapist would you like to book with? Please select by number:");
-            for (int i = 0; i < allPhysios.size(); i++) {
-                System.out.println((i + 1) + ". " + allPhysios.get(i).getFullName());
-            }
+            System.out.println("How would you like to view available appointments?");
+            System.out.println("1. By Expertise (e.g., Physiotherapy, Rehabilitation)");
+            System.out.println("2. By Physiotherapist's Name");
+            System.out.print("Choose an option: ");
+            int viewOption = Integer.parseInt(scanner.nextLine());
 
-            int physioChoice = Integer.parseInt(scanner.nextLine()) - 1;
-            if (physioChoice < 0 || physioChoice >= allPhysios.size()) {
-                System.out.println("Oops! Invalid physiotherapist selection. Please choose a valid number.");
+            List<Treatment> availableTreatments = new ArrayList<>();
+
+            if (viewOption == 1) {
+
+                System.out.println("Please enter the expertise (e.g., Physiotherapy, Rehabilitation):");
+                String expertise = scanner.nextLine();
+
+                for (Physiotherapist physio : allPhysios) {
+                    for (Treatment t : physio.getTreatments()) {
+                        if (t.getTreatmentName().equalsIgnoreCase(expertise) && t.getPatient() == null) {
+                            availableTreatments.add(t);
+                        }
+                    }
+                }
+            } else if (viewOption == 2) {
+
+                System.out.println("Please enter the physiotherapist's name:");
+                String physioName = scanner.nextLine();
+
+                for (Physiotherapist physio : allPhysios) {
+                    if (physio.getFullName().equalsIgnoreCase(physioName)) {
+                        for (Treatment t : physio.getTreatments()) {
+                            if (t.getPatient() == null) {
+                                availableTreatments.add(t);
+                            }
+                        }
+                    }
+                }
+            } else {
+                System.out.println("Invalid option. Please try again.");
                 return;
             }
-            Physiotherapist selectedPhysio = allPhysios.get(physioChoice);
 
-            System.out.println("What treatment would you like to book for? (e.g., Physiotherapy, Sports Therapy, etc.):");
-            String treatmentName = scanner.nextLine();
 
-            System.out.println("Please enter the date for the appointment (in yyyy-MM-dd format, e.g., 2025-10-09):");
-            String dateStr = scanner.nextLine();
-
-            System.out.println("Now, enter the time for the appointment (in HH:mm or HHmm format, e.g., 09:30 or 0930):");
-            String timeStr = scanner.nextLine();
-
-            if (timeStr.length() == 4) {
-                timeStr = timeStr.substring(0, 2) + ":" + timeStr.substring(2);
+            if (availableTreatments.isEmpty()) {
+                System.out.println("No available appointments found.");
+                return;
             }
 
-            LocalDateTime dateTime = LocalDateTime.parse(dateStr + "T" + timeStr);
+            System.out.println("Available appointments:");
+            for (int i = 0; i < availableTreatments.size(); i++) {
+                Treatment t = availableTreatments.get(i);
+                System.out.println((i + 1) + ". " + t.getTreatmentName() + " with " + t.getPhysiotherapist().getFullName() +
+                        " on " + t.getDateTime() + " | Status: " + (t.getPatient() == null ? "Available" : "Booked"));
+            }
+
+            System.out.println("Choose an appointment by number:");
+            int treatmentChoice = Integer.parseInt(scanner.nextLine()) - 1;
+
+            if (treatmentChoice < 0 || treatmentChoice >= availableTreatments.size()) {
+                System.out.println("Invalid choice. Please try again.");
+                return;
+            }
+
+            Treatment selectedTreatment = availableTreatments.get(treatmentChoice);
 
             for (Physiotherapist physio : allPhysios) {
                 for (Treatment t : physio.getTreatments()) {
-                    if (t.getDateTime().equals(dateTime) && t.getPatient() != null) {
-                        System.out.println(" Sorry, this time slot is already booked by another physiotherapist.");
+                    if (t.getPatient() != null && t.getPatient().getFullName().equalsIgnoreCase(name) &&
+                            t.getDateTime().equals(selectedTreatment.getDateTime())) {
+                        System.out.println("❌ This patient already has an appointment at this time. Please choose another slot.");
                         return;
                     }
                 }
@@ -138,21 +174,20 @@ public class Main {
                         return newP;
                     });
 
-            Treatment treatment = new Treatment(treatmentName, dateTime, selectedPhysio);
-            treatment.setPatient(patient);
-            treatment.setStatus(TreatmentStatus.BOOKED);
+            selectedTreatment.setPatient(patient);
+            selectedTreatment.setStatus(TreatmentStatus.BOOKED);
 
-            selectedPhysio.addTreatment(treatment);
-            bookingSystem.bookAppointment(patient, treatment);
+            selectedTreatment.getPhysiotherapist().addTreatment(selectedTreatment);
+            bookingSystem.bookAppointment(patient, selectedTreatment);
 
-            System.out.println(name + " booked " + treatmentName + " with " + selectedPhysio.getFullName() + " on " + dateTime);
-            System.out.println("✅ Appointment booked successfully!");
-            System.out.println("Patient: " + name + " | Treatment: " + treatmentName + " | Physiotherapist: " + selectedPhysio.getFullName());
-            System.out.println("Date: " + dateStr + " | Time: " + timeStr);
-            System.out.println("Status: " + TreatmentStatus.BOOKED);
+            System.out.println(" Appointment booked successfully!");
+            System.out.println("Patient: " + patient.getFullName() + " | Treatment: " + selectedTreatment.getTreatmentName() +
+                    " | Physiotherapist: " + selectedTreatment.getPhysiotherapist().getFullName());
+            System.out.println("Date: " + selectedTreatment.getDateTime());
+            System.out.println("Status: " + selectedTreatment.getStatus());
 
         } catch (Exception e) {
-            System.out.println("Oops! Something went wrong. Please check the date/time format and try again.");
+            System.out.println("Oops! Something went wrong. Please try again.");
         }
     }
 
