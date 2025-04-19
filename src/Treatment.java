@@ -1,3 +1,4 @@
+
 import java.time.LocalDateTime;
 
 public class Treatment {
@@ -6,6 +7,7 @@ public class Treatment {
     private Physiotherapist physiotherapist;
     private Patient patient;
     private TreatmentStatus status;
+    private Treatment treatment;
 
     public Treatment(String treatmentName, LocalDateTime dateTime, Physiotherapist physiotherapist) {
         this.treatmentName = treatmentName;
@@ -30,6 +32,10 @@ public class Treatment {
         return patient;
     }
 
+    public Treatment getTreatment() {
+        return treatment;
+    }
+
     public void setPatient(Patient patient) {
         this.patient = patient;
     }
@@ -44,6 +50,9 @@ public class Treatment {
 
     public void setStatus(TreatmentStatus status) {
         this.status = status;
+    }
+    public void setTreatment(Treatment treatment) {
+        this.treatment = treatment;
     }
 
     @Override

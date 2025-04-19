@@ -1,7 +1,6 @@
 import java.time.*;
 import java.util.*;
 
-
 public class Main {
 
     private static final List<Patient> allPatients = new ArrayList<>();
@@ -33,12 +32,13 @@ public class Main {
 
                 new Physiotherapist("005", "Evans Gray", "15 Cavendish Street", "0793547689",
                         List.of("Pediatric Physiotherapy"),
-                        List.of(new WorkingTime(DayOfWeek.FRIDAY, LocalTime.of(9, 0), LocalTime.of(15, 0))))
-        ));
+                        List.of(new WorkingTime(DayOfWeek.FRIDAY, LocalTime.of(9, 0), LocalTime.of(15, 0))))));
 
         for (int i = 1; i <= 10; i++) {
             allPatients.add(new Patient("PT" + i, "Patient " + i, "Address " + i, "0700" + i + "000" + i));
         }
+
+        BookingService bookingSystem = new BookingService(allPhysios, allPatients);
 
         LocalDate startDate = LocalDate.now();
         for (Physiotherapist physio : allPhysios) {
@@ -47,9 +47,6 @@ public class Main {
                 physio.addTreatment(new Treatment("Session " + (i + 1), dt, physio));
             }
         }
-
-        BookingService bookingSystem = new BookingService();
-        allPhysios.forEach(bookingSystem::addPhysiotherapist);
 
         while (true) {
             System.out.println("\n====== Physio Clinic App ======");
@@ -68,7 +65,7 @@ public class Main {
                 switch (choice) {
                     case 1 -> bookAppointment(bookingSystem);
                     case 2 -> cancelAppointment();
-                    case 3 -> rescheduleAppointment();
+                    case 3 -> bookingSystem.rescheduleAppointment();
                     case 4 -> markAsAttended();
                     case 5 -> addPatient();
                     case 6 -> removePatient();
@@ -87,7 +84,6 @@ public class Main {
 
     private static void bookAppointment(BookingService bookingSystem) {
         try {
-            // Collect Patient Details
             System.out.println("Please enter the patient's full name:");
             String name = scanner.nextLine();
 
@@ -96,7 +92,6 @@ public class Main {
 
             System.out.println("Please enter the patient's address:");
             String address = scanner.nextLine();
-
 
             System.out.println("Which physiotherapist would you like to book with? Please select by number:");
             for (int i = 0; i < allPhysios.size(); i++) {
@@ -110,10 +105,8 @@ public class Main {
             }
             Physiotherapist selectedPhysio = allPhysios.get(physioChoice);
 
-
             System.out.println("What treatment would you like to book for? (e.g., Physiotherapy, Sports Therapy, etc.):");
             String treatmentName = scanner.nextLine();
-
 
             System.out.println("Please enter the date for the appointment (in yyyy-MM-dd format, e.g., 2025-10-09):");
             String dateStr = scanner.nextLine();
@@ -121,22 +114,20 @@ public class Main {
             System.out.println("Now, enter the time for the appointment (in HH:mm or HHmm format, e.g., 09:30 or 0930):");
             String timeStr = scanner.nextLine();
 
-
             if (timeStr.length() == 4) {
                 timeStr = timeStr.substring(0, 2) + ":" + timeStr.substring(2);
             }
 
-
             LocalDateTime dateTime = LocalDateTime.parse(dateStr + "T" + timeStr);
 
-
-            for (Treatment t : selectedPhysio.getTreatments()) {
-                if (t.getDateTime().equals(dateTime) && t.getPatient() != null) {
-                    System.out.println("Sorry, this time slot is already booked! Please choose a different time.");
-                    return;
+            for (Physiotherapist physio : allPhysios) {
+                for (Treatment t : physio.getTreatments()) {
+                    if (t.getDateTime().equals(dateTime) && t.getPatient() != null) {
+                        System.out.println(" Sorry, this time slot is already booked by another physiotherapist.");
+                        return;
+                    }
                 }
             }
-
 
             Patient patient = allPatients.stream()
                     .filter(p -> p.getFullName().equalsIgnoreCase(name))
@@ -147,7 +138,6 @@ public class Main {
                         return newP;
                     });
 
-
             Treatment treatment = new Treatment(treatmentName, dateTime, selectedPhysio);
             treatment.setPatient(patient);
             treatment.setStatus(TreatmentStatus.BOOKED);
@@ -155,7 +145,8 @@ public class Main {
             selectedPhysio.addTreatment(treatment);
             bookingSystem.bookAppointment(patient, treatment);
 
-            System.out.println("Your appointment is successfully booked!");
+            System.out.println(name + " booked " + treatmentName + " with " + selectedPhysio.getFullName() + " on " + dateTime);
+            System.out.println("✅ Appointment booked successfully!");
             System.out.println("Patient: " + name + " | Treatment: " + treatmentName + " | Physiotherapist: " + selectedPhysio.getFullName());
             System.out.println("Date: " + dateStr + " | Time: " + timeStr);
             System.out.println("Status: " + TreatmentStatus.BOOKED);
@@ -175,39 +166,6 @@ public class Main {
                     t.setPatient(null);
                     System.out.println("Appointment cancelled for: " + name);
                     return;
-                }
-            }
-        }
-        System.out.println("No appointment found for this patient.");
-    }
-
-    private static void rescheduleAppointment() {
-        System.out.println("Enter Patient Name to reschedule appointment:");
-        String name = scanner.nextLine();
-        for (Physiotherapist physio : allPhysios) {
-            for (Treatment t : physio.getTreatments()) {
-                if (t.getPatient() != null && t.getPatient().getFullName().equalsIgnoreCase(name)) {
-                    try {
-                        System.out.println("Enter new date (yyyy-MM-dd):");
-                        String dateStr = scanner.nextLine();
-                        System.out.println("Enter new time (HH:mm):");
-                        String timeStr = scanner.nextLine();
-                        LocalDateTime newDateTime = LocalDateTime.parse(dateStr + "T" + timeStr);
-
-                        for (Treatment other : physio.getTreatments()) {
-                            if (other.getDateTime().equals(newDateTime) && other.getPatient() != null) {
-                                System.out.println("New slot is already booked.");
-                                return;
-                            }
-                        }
-
-                        t.setDateTime(newDateTime);
-                        System.out.println("Appointment rescheduled for: " + name);
-                        return;
-                    } catch (Exception e) {
-                        System.out.println("Invalid input format.");
-                        return;
-                    }
                 }
             }
         }
@@ -260,20 +218,14 @@ public class Main {
     }
 
     private static void generateReport() {
-        System.out.println("\n=== End of Term Report ===");
+        System.out.println("Generating Report...");
+
         for (Physiotherapist physio : allPhysios) {
             System.out.println("\nPhysiotherapist: " + physio.getFullName());
             for (Treatment t : physio.getTreatments()) {
-                if (t.getPatient() != null) {
-                    System.out.println("  Treatment: " + t.getTreatmentName() + ", Patient: " + t.getPatient().getFullName() +
-                            ", Time: " + t.getDateTime() + ", Status: " + t.getStatus());
-                }
+                String status = (t.getPatient() != null ? t.getPatient().getFullName() : "No patient assigned") + " - " + t.getStatus();
+                System.out.println(t.getDateTime() + " | " + t.getTreatmentName() + " | Status: " + status);
             }
         }
-
-        System.out.println("\n=== Physiotherapist Ranking by Attended Appointments ===");
-        allPhysios.stream()
-                .sorted(Comparator.comparingInt(Physiotherapist::getAttendedCount).reversed())
-                .forEach(p -> System.out.println(p.getFullName() + " - Attended: " + p.getAttendedCount()));
     }
 }
