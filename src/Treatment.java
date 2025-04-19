@@ -1,5 +1,5 @@
-
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class Treatment {
     private String treatmentName;
@@ -7,13 +7,14 @@ public class Treatment {
     private Physiotherapist physiotherapist;
     private Patient patient;
     private TreatmentStatus status;
-    private Treatment treatment;
+    private String bookingId;
 
     public Treatment(String treatmentName, LocalDateTime dateTime, Physiotherapist physiotherapist) {
         this.treatmentName = treatmentName;
         this.dateTime = dateTime;
         this.physiotherapist = physiotherapist;
         this.status = TreatmentStatus.BOOKED;
+        this.bookingId = UUID.randomUUID().toString();
     }
 
     public String getTreatmentName() {
@@ -32,8 +33,12 @@ public class Treatment {
         return patient;
     }
 
-    public Treatment getTreatment() {
-        return treatment;
+    public TreatmentStatus getStatus() {
+        return status;
+    }
+
+    public String getBookingId() {
+        return bookingId;
     }
 
     public void setPatient(Patient patient) {
@@ -44,19 +49,20 @@ public class Treatment {
         this.dateTime = dateTime;
     }
 
-    public TreatmentStatus getStatus() {
-        return status;
-    }
-
     public void setStatus(TreatmentStatus status) {
         this.status = status;
     }
-    public void setTreatment(Treatment treatment) {
-        this.treatment = treatment;
+
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
     }
 
     @Override
     public String toString() {
-        return treatmentName + " on " + dateTime.toString() + " with " + physiotherapist.getFullName();
+        return treatmentName + " on " + dateTime.toString() +
+                " with " + physiotherapist.getFullName() +
+                " | Status: " + status +
+                (patient != null ? " | Booked by: " + patient.getFullName() : "") +
+                " | Booking ID: " + bookingId;
     }
 }
