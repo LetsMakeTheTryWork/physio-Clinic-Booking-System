@@ -1,21 +1,21 @@
 import java.time.LocalDateTime;
 
 public class Treatment {
-    private String name;
+    private String treatmentName;
     private LocalDateTime dateTime;
     private Physiotherapist physiotherapist;
     private Patient patient;
     private TreatmentStatus status;
 
-    public Treatment(String name, LocalDateTime dateTime, Physiotherapist physiotherapist) {
-        this.name = name;
+    public Treatment(String treatmentName, LocalDateTime dateTime, Physiotherapist physiotherapist) {
+        this.treatmentName = treatmentName;
         this.dateTime = dateTime;
         this.physiotherapist = physiotherapist;
         this.status = TreatmentStatus.BOOKED;
     }
 
-    public String getName() {
-        return name;
+    public String getTreatmentName() {
+        return treatmentName;
     }
 
     public LocalDateTime getDateTime() {
@@ -38,7 +38,6 @@ public class Treatment {
         this.dateTime = dateTime;
     }
 
-
     public TreatmentStatus getStatus() {
         return status;
     }
@@ -49,6 +48,6 @@ public class Treatment {
 
     @Override
     public String toString() {
-        return name + " on " + dateTime.toString() + " with " + physiotherapist.getFullName();
+        return treatmentName + " on " + dateTime.toString() + " with " + physiotherapist.getFullName();
     }
 }

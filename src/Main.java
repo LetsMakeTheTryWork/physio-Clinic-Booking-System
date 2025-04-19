@@ -265,7 +265,7 @@ public class Main {
             System.out.println("\nPhysiotherapist: " + physio.getFullName());
             for (Treatment t : physio.getTreatments()) {
                 if (t.getPatient() != null) {
-                    System.out.println("  Treatment: " + t.getName() + ", Patient: " + t.getPatient().getFullName() +
+                    System.out.println("  Treatment: " + t.getTreatmentName() + ", Patient: " + t.getPatient().getFullName() +
                             ", Time: " + t.getDateTime() + ", Status: " + t.getStatus());
                 }
             }
