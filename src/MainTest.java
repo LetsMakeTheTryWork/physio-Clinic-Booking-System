@@ -80,7 +80,7 @@ public class MainTest {
         oldSlot.cancel();
 
 
-        TreatmentSlot newSlot = physio.getSchedule().get(1).get(1); // second slot
+        TreatmentSlot newSlot = physio.getSchedule().get(1).get(1);
         String newAppointmentId = "A" + Main.nextAppointmentId++;
         newSlot.book(newAppointmentId);
         Appointment newAppointment = new Appointment(newAppointmentId, patient, physio, newSlot, "BOOKED");
