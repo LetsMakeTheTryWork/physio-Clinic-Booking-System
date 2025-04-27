@@ -75,9 +75,10 @@ public class MainTest {
         Appointment oldAppointment = new Appointment(oldAppointmentId, patient, physio, oldSlot, "BOOKED");
         Main.appointments.add(oldAppointment);
 
-        // Cancel and reschedule
+
         oldAppointment.setStatus("CANCELLED");
         oldSlot.cancel();
+
 
         TreatmentSlot newSlot = physio.getSchedule().get(1).get(1); // second slot
         String newAppointmentId = "A" + Main.nextAppointmentId++;
