@@ -256,7 +256,7 @@ public class Main {
                         && (a.getStatus().equals("BOOKED") || a.getStatus().equals("ATTENDED")));
 
         if (alreadyBooked) {
-            System.out.println("\n You already have an appointment booked at this time!");
+            System.out.println("\n You already booked for appointment at this time!");
             return;
         }
 
