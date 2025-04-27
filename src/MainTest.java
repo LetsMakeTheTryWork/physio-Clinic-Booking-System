@@ -1,8 +1,6 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.util.List;
-
 
 public class MainTest {
 
@@ -19,7 +17,7 @@ public class MainTest {
     @Test
     void testAddPatient() {
         int before = Main.patients.size();
-        Main.patients.add(new Patient("P100", "Test Patient", "Test Address", "0700123456"));
+        Main.patients.add(new Patient("P100", "Test Patient", "Test Address", 700123456));
         assertEquals(before + 1, Main.patients.size());
     }
 
@@ -29,7 +27,6 @@ public class MainTest {
         Main.patients.removeIf(p -> p.getId().equalsIgnoreCase(idToRemove));
         assertFalse(Main.patients.stream().anyMatch(p -> p.getId().equals(idToRemove)));
     }
-
 
     @Test
     void testBookAppointment() {
@@ -59,7 +56,6 @@ public class MainTest {
 
         appt.setStatus("CANCELLED");
         slot.cancel();
-
         assertEquals("CANCELLED", appt.getStatus());
         assertFalse(slot.isBooked());
     }
@@ -68,79 +64,44 @@ public class MainTest {
     void testRescheduleAppointment() {
         Patient patient = Main.patients.get(0);
         Physiotherapist physio = Main.physios.get(0);
-        TreatmentSlot oldSlot = physio.getSchedule().get(1).get(0);
+        TreatmentSlot slot = physio.getSchedule().get(1).get(0);
 
-        String oldAppointmentId = "A" + Main.nextAppointmentId++;
-        oldSlot.book(oldAppointmentId);
-        Appointment oldAppointment = new Appointment(oldAppointmentId, patient, physio, oldSlot, "BOOKED");
-        Main.appointments.add(oldAppointment);
+        String appointmentId = "A" + Main.nextAppointmentId++;
+        slot.book(appointmentId);
+        Appointment appt = new Appointment(appointmentId, patient, physio, slot, "BOOKED");
+        Main.appointments.add(appt);
 
-
-        oldAppointment.setStatus("CANCELLED");
-        oldSlot.cancel();
-
+        appt.setStatus("CANCELLED");
+        slot.cancel();
 
         TreatmentSlot newSlot = physio.getSchedule().get(1).get(1);
         String newAppointmentId = "A" + Main.nextAppointmentId++;
         newSlot.book(newAppointmentId);
-        Appointment newAppointment = new Appointment(newAppointmentId, patient, physio, newSlot, "BOOKED");
-        Main.appointments.add(newAppointment);
+        Appointment newAppt = new Appointment(newAppointmentId, patient, physio, newSlot, "BOOKED");
+        Main.appointments.add(newAppt);
 
-        assertEquals("CANCELLED", oldAppointment.getStatus());
+        assertEquals("CANCELLED", appt.getStatus());
         assertTrue(newSlot.isBooked());
-        assertEquals("BOOKED", newAppointment.getStatus());
+        assertEquals("BOOKED", newAppt.getStatus());
     }
 
     @Test
-    void testMarkAsAttendedWithRealData() {
-        Patient patient = new Patient("P996", "Attend Tester", "Attend Lane", "0711223344");
-        Physiotherapist physio = new Physiotherapist("PH11", "Attend Physio", "Attend Street", "0777555444", List.of("Rehabilitation"));
-        TreatmentSlot slot = new TreatmentSlot("Rehab", "2025-06-03 09:00");
-        physio.addToSchedule(1, slot);
+    void testMarkAsAttended() {
+        Patient patient = Main.patients.get(0);
+        Physiotherapist physio = Main.physios.get(0);
+        TreatmentSlot slot = physio.getSchedule().get(1).get(0);
 
-        Main.patients.add(patient);
-        Main.physios.add(physio);
-
-        String appointmentId = "A997";
+        String appointmentId = "A" + Main.nextAppointmentId++;
         slot.book(appointmentId);
-        Appointment appointment = new Appointment(appointmentId, patient, physio, slot, "BOOKED");
-        Main.appointments.add(appointment);
+        Appointment appt = new Appointment(appointmentId, patient, physio, slot, "BOOKED");
+        Main.appointments.add(appt);
 
-        appointment.setStatus("ATTENDED");
-
-        assertEquals("ATTENDED", appointment.getStatus());
+        appt.setStatus("ATTENDED");
+        assertEquals("ATTENDED", appt.getStatus());
     }
 
     @Test
-    void testRealRescheduleAppointment() {
-        Patient patient = new Patient("P995", "Reschedule Tester", "Reschedule Road", "0722334455");
-        Physiotherapist physio = new Physiotherapist("PH12", "Reschedule Physio", "Reschedule Court", "0766778899", List.of("Massage"));
-        TreatmentSlot slot1 = new TreatmentSlot("Massage", "2025-06-04 12:00");
-        TreatmentSlot slot2 = new TreatmentSlot("Massage", "2025-06-05 13:00");
-        physio.addToSchedule(1, slot1);
-        physio.addToSchedule(2, slot2);
-
-        Main.patients.add(patient);
-        Main.physios.add(physio);
-
-        String appointmentId = "A996";
-        slot1.book(appointmentId);
-        Appointment appointment = new Appointment(appointmentId, patient, physio, slot1, "BOOKED");
-        Main.appointments.add(appointment);
-
-        appointment.setStatus("CANCELLED");
-        slot1.cancel();
-        slot2.book("A996-NEW");
-        Appointment newAppointment = new Appointment("A996-NEW", patient, physio, slot2, "BOOKED");
-        Main.appointments.add(newAppointment);
-
-        assertEquals("CANCELLED", appointment.getStatus());
-        assertTrue(slot2.isBooked());
-        assertEquals("BOOKED", newAppointment.getStatus());
-    }
-
-    @Test
-    void testGenerateReportDoesNotThrow() {
+    void testGenerateReport() {
         assertDoesNotThrow(() -> Main.generateReport());
     }
 }
