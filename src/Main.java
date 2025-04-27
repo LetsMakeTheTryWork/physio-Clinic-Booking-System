@@ -45,6 +45,7 @@ public class Main {
     }
 
     static void mainMenu() {
+
         while (true) {
             System.out.println("\n=== Boost Physio Clinic ===");
             System.out.println("1. Book Appointment");
