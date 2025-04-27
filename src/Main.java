@@ -31,6 +31,7 @@ public class Main {
             }
         }
 
+
         String[] patientNames = {
                 "Sarah Williams", "Jack Snow", "Robinson Grace", "Meadow White",
                 "George Olive", "Harry Song", "Spencer Gardens", "Miranda Michaels",
