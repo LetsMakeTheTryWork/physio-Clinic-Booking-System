@@ -128,7 +128,6 @@ public class MainTest {
         Appointment appointment = new Appointment(appointmentId, patient, physio, slot1, "BOOKED");
         Main.appointments.add(appointment);
 
-        // Reschedule
         appointment.setStatus("CANCELLED");
         slot1.cancel();
         slot2.book("A996-NEW");
