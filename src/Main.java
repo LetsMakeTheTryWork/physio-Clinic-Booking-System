@@ -265,7 +265,7 @@ public class Main {
         Appointment appt = new Appointment(appointmentId, patient, physio, slot, "BOOKED");
         appointments.add(appt);
 
-        System.out.println("\n Appointment confirmed: " + appointmentId);
+        System.out.println("\n Booking Appointment confirmed: " + appointmentId);
         System.out.println("Patient: " + patient.getName());
         System.out.println("Physio: " + physio.getName());
         System.out.println("Date: " + slot.getDateTime());
@@ -273,7 +273,7 @@ public class Main {
     }
 
     static void cancelAppointment() {
-        System.out.print("Enter appointment ID to cancel: ");
+        System.out.print("Enter Booking Appointment ID to cancel: ");
         String id = scanner.nextLine();
         boolean found = false;
 
@@ -282,8 +282,8 @@ public class Main {
                 a.setStatus("CANCELLED");
                 a.getSlot().cancel();
 
-                System.out.println("\n Appointment cancelled:");
-                System.out.println(" Appointment ID: " + a.getId());
+                System.out.println("\n Booking Appointment cancelled:");
+                System.out.println(" Booking Appointment ID: " + a.getId());
                 System.out.println(" Patient: " + a.getPatient().getName());
                 System.out.println(" Physio: " + a.getPhysio().getName());
                 System.out.println("Date: " + a.getSlot().getDateTime());
@@ -295,13 +295,13 @@ public class Main {
         }
 
         if (!found) {
-            System.out.println("Appointment ID not found.\n");
+            System.out.println("Booking Appointment ID not found.\n");
         }
     }
 
 
     static void rescheduleAppointment() {
-        System.out.print("Enter appointment ID to reschedule: ");
+        System.out.print("Enter Booking appointment ID to reschedule: ");
         String id = scanner.nextLine();
         Appointment existing = appointments.stream()
                 .filter(a -> a.getId().equalsIgnoreCase(id))
@@ -320,13 +320,13 @@ public class Main {
     }
 
     static void markAsAttended() {
-        System.out.print("Enter appointment ID to mark as attended: ");
+        System.out.print("Enter Booking appointment ID to mark as attended: ");
         String id = scanner.nextLine();
         for (Appointment a : appointments) {
             if (a.getId().equalsIgnoreCase(id)) {
                 a.setStatus("ATTENDED");
                 System.out.println("\n---------------------------------------");
-                System.out.println("Appointment ID: " + a.getId());
+                System.out.println("Booking Appointment ID: " + a.getId());
                 System.out.println("Patient: " + a.getPatient().getName());
                 System.out.println("Physio: " + a.getPhysio().getName());
                 System.out.println("Date: " + a.getSlot().getDateTime());
@@ -339,7 +339,7 @@ public class Main {
     }
 
     static void generateReport() {
-        System.out.println("=== Appointment Report by Physiotherapist ===");
+        System.out.println("=== Booking Appointment Report by Physiotherapist ===");
         for (Physiotherapist physio : physios) {
             System.out.println("\n" + physio.getName() + ":");
             for (Appointment a : appointments) {
