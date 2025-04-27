@@ -91,7 +91,7 @@ public class Main {
         Patient newPatient = new Patient(id, name, address, phoneNumber);
         patients.add(newPatient);
 
-        System.out.println("\n✅ Patient successfully registered!");
+        System.out.println("\n Patient successfully registered!");
         System.out.println("Patient ID: " + newPatient.getId());
         System.out.println("Name: " + newPatient.getName());
         System.out.println("Address: " + newPatient.getAddress());
@@ -111,7 +111,7 @@ public class Main {
         String id = "P" + (nextPatientId++);
         Patient newPatient = new Patient(id, name, address, phoneNumber);
         patients.add(newPatient);
-        System.out.println("\n✅ New patient registered with ID: " + id);
+        System.out.println("\n New patient registered with ID: " + id);
         return newPatient;
     }
 
@@ -124,7 +124,7 @@ public class Main {
             if (a.getPatient().getId().equalsIgnoreCase(id) && (a.getStatus().equals("BOOKED") || a.getStatus().equals("ATTENDED"))) {
                 a.setStatus("CANCELLED");
                 a.getSlot().cancel();
-                System.out.println("\n❌ Cancelled Appointment:");
+                System.out.println("\n Cancelled Appointment:");
                 System.out.println("Patient: " + a.getPatient().getName());
                 System.out.println("Physio: " + a.getPhysio().getName());
                 System.out.println("Date: " + a.getSlot().getDateTime());
@@ -135,9 +135,9 @@ public class Main {
 
         boolean patientRemoved = patients.removeIf(p -> p.getId().equalsIgnoreCase(id));
         if (patientRemoved) {
-            System.out.println("✅ Patient record successfully removed.\n");
+            System.out.println(" Patient record successfully removed.\n");
         } else if (!found) {
-            System.out.println("⚠️ No patient found with that ID.\n");
+            System.out.println(" No patient found with that ID.\n");
         }
     }
 
