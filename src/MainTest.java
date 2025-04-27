@@ -30,6 +30,7 @@ public class MainTest {
         assertFalse(Main.patients.stream().anyMatch(p -> p.getId().equals(idToRemove)));
     }
 
+
     @Test
     void testBookAppointment() {
         Patient patient = Main.patients.get(0);
