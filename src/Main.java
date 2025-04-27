@@ -309,13 +309,13 @@ public class Main {
                 .orElse(null);
 
         if (existing == null) {
-            System.out.println("Appointment not found.");
+            System.out.println("Booking Appointment not found.");
             return;
         }
 
         existing.setStatus("CANCELLED");
         existing.getSlot().cancel();
-        System.out.println("Appointment cancelled. Now rebooking...");
+        System.out.println("Booking Appointment cancelled. Now rebooking...");
         selectSlotAndBook(existing.getPatient(), existing.getPhysio());
     }
 
