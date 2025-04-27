@@ -67,7 +67,7 @@ public class Main {
                 case 7 -> generateReport();
                 case 8 -> {
                     System.out.println("\n See you!! in your next appointment...");
-                    pause(); // Stay inside program
+                    pause();
                 }
                 default -> System.out.println("Invalid option.");
             }
