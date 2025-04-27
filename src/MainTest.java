@@ -25,7 +25,7 @@ public class MainTest {
 
     @Test
     void testRemovePatient() {
-        String idToRemove = Main.patients.get(0).getId(); // remove first patient
+        String idToRemove = Main.patients.get(0).getId();
         Main.patients.removeIf(p -> p.getId().equalsIgnoreCase(idToRemove));
         assertFalse(Main.patients.stream().anyMatch(p -> p.getId().equals(idToRemove)));
     }
@@ -35,7 +35,7 @@ public class MainTest {
     void testBookAppointment() {
         Patient patient = Main.patients.get(0);
         Physiotherapist physio = Main.physios.get(0);
-        TreatmentSlot slot = physio.getSchedule().get(1).get(0); // week 1, first slot
+        TreatmentSlot slot = physio.getSchedule().get(1).get(0);
 
         String appointmentId = "A" + Main.nextAppointmentId++;
         slot.book(appointmentId);
