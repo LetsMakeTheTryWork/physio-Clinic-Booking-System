@@ -247,7 +247,7 @@ public class Main {
             return;
         }
 
-        // 💖 Double booking check
+
         boolean alreadyBooked = appointments.stream()
                 .anyMatch(a -> a.getPatient().getId().equals(patient.getId())
                         && a.getSlot().getDateTime().equals(slot.getDateTime())
