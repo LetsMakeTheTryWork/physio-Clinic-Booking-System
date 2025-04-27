@@ -1,65 +1,32 @@
 public class Patient {
     private String id;
-    private String fullName;
-    private String phoneNumber;
+    private String name;
     private String address;
-    private Treatment treatment;
+    private String phone;
 
-    public Patient(String id, String fullName, String phoneNumber, String address) {
+    public Patient(String id, String name, String address, String phone) {
         this.id = id;
-        this.fullName = fullName;
-        this.phoneNumber = phoneNumber;
+        this.name = name;
         this.address = address;
-        this.treatment = null;
+        this.phone = phone;
     }
 
-    public String getId() {
-        return id;
-    }
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public String getAddress() { return address; }
+    public String getPhone() { return phone; }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public Treatment getTreatment() {
-        return treatment;
-    }
-
-    public void setTreatment(Treatment treatment) {
-        this.treatment = treatment;
-    }
+    public void setName(String name) { this.name = name; }
+    public void setAddress(String address) { this.address = address; }
+    public void setPhone(String phone) { this.phone = phone; }
 
     @Override
     public String toString() {
         return "Patient{" +
                 "id='" + id + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
+                ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
+                ", phone='" + phone + '\'' +
                 '}';
     }
 }
