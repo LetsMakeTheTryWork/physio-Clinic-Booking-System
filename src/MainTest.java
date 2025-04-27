@@ -99,7 +99,6 @@ public class MainTest {
         appt.setStatus("ATTENDED");
         assertEquals("ATTENDED", appt.getStatus());
     }
-
     @Test
     void testGenerateReport() {
         assertDoesNotThrow(() -> Main.generateReport());
